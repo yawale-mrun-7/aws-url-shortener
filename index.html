@@ -450,13 +450,14 @@ function App() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Something went wrong');
-      const item = {
-        id: data.short_id,
-        shortUrl: data.short_url,
-        originalUrl: url.trim(),
-        createdAt: Date.now(),
-        clicks: 0
-      };
+const item = {
+  id: data.short_id,
+  shortUrl: data.short_url,
+  displayUrl: `snip/${data.short_id}`,
+  originalUrl: url.trim(),
+  createdAt: Date.now(),
+  clicks: 0
+};
       setLatest(item);
       setHistory(prev => [item, ...prev]);
       setUrl('');
@@ -534,10 +535,10 @@ function App() {
     latest && React.createElement('div', { className: 'result-card' },
       React.createElement('p', { className: 'result-label' }, '✓ link ready'),
       React.createElement('div', { className: 'result-row' },
-        React.createElement('span', { className: 'result-url' }, latest.shortUrl),
+        React.createElement('span', { className: 'result-url' }, latest.displayUrl),
         React.createElement('button', {
           className: `copy-btn ${copiedId === 'latest' ? 'copied' : ''}`,
-          onClick: () => copy(latest.shortUrl, 'latest')
+          onClick: () => copy(latest.displayUrl, 'latest')
         }, copiedId === 'latest' ? 'copied!' : 'copy')
       )
     ),
@@ -560,7 +561,7 @@ function App() {
                 React.createElement('span', { className: 'history-time' }, timeAgo(item.createdAt))
               ),
               React.createElement('div', { className: 'history-bottom' },
-                React.createElement('a', { className: 'history-short', href: item.shortUrl, target: '_blank', rel: 'noreferrer' }, item.shortUrl),
+                React.createElement('a', { className: 'history-short', href: item.shortUrl, target: '_blank', rel: 'noreferrer' }, item.displayUrl),
                 React.createElement('div', { className: 'history-meta' },
                   React.createElement('div', { className: 'click-badge' },
                     React.createElement('div', { className: 'click-dot' }),
@@ -568,7 +569,7 @@ function App() {
                   ),
                   React.createElement('button', {
                     className: 'history-copy',
-                    onClick: () => copy(item.shortUrl, item.id)
+                    onClick: () => copy(item.displayUrl, item.id)
                   }, copiedId === item.id ? 'copied!' : 'copy')
                 )
               )
